@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>WebP Batch Resizer 2.3</title>
+    <title>WebP Batch Resizer 2.4</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
@@ -48,7 +48,7 @@
                 <p class="text-slate-400 mt-1 text-sm">Redimensionar, Renomear e Converter para WebP.</p>
             </div>
             <div class="flex items-center gap-2">
-                <span class="px-3 py-1 text-xs font-mono rounded-full bg-slate-800 text-brand border border-slate-700">v2.3 Stats Info</span>
+                <span class="px-3 py-1 text-xs font-mono rounded-full bg-slate-800 text-brand border border-slate-700">v2.4 Smart Zip</span>
             </div>
         </header>
 
@@ -82,6 +82,7 @@
                                 <input type="text" id="prefixInput" placeholder="Ex: foto-site-" class="flex-1 bg-slate-800 border border-slate-700 rounded px-3 py-1.5 text-sm focus:border-brand focus:outline-none">
                                 <button id="applyPrefixBtn" class="bg-slate-700 hover:bg-slate-600 px-3 py-1.5 rounded text-xs font-bold text-white transition-colors">Aplicar</button>
                             </div>
+                            <p class="text-[10px] text-slate-500 mt-1">Isso também define o nome do arquivo .ZIP</p>
                         </div>
                     </div>
 
@@ -426,8 +427,15 @@
         downloadZipBtn.addEventListener('click', async () => {
             const zip = new JSZip();
             let count = 0;
+            
+            // Pega o prefixo atual para nomear o ZIP
+            const prefix = prefixInput.value.trim();
+            // Se tiver prefixo, o zip vira "prefixo.zip", se não, vira "imagens_webp.zip"
+            const zipFilename = prefix ? `${prefix}.zip` : "imagens_otimizadas.zip";
+
             queue.forEach(item => {
                 if (item.blob) {
+                    // Arquivos internos respeitam o customName (que já inclui o prefixo se foi aplicado)
                     zip.file(`${item.customName}.webp`, item.blob);
                     count++;
                 }
@@ -442,7 +450,7 @@
             downloadZipBtn.innerHTML = `Compactando...`;
             
             const content = await zip.generateAsync({type:"blob"});
-            saveAs(content, "imagens_webp.zip");
+            saveAs(content, zipFilename);
             downloadZipBtn.innerHTML = originalText;
         });
 
