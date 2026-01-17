@@ -3,11 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>WebP Batch Resizer 2.4</title>
+    <title>WebP Batch Resizer 2.6 - Pixel Perfect</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
-    <link rel="icon" href="./files/main/assets/favicon.png" type="image/png">
     
     <script>
         tailwind.config = {
@@ -19,6 +18,9 @@
                         card: '#1e293b',
                         success: '#22c55e',
                         warning: '#f59e0b'
+                    },
+                    animation: {
+                        'bounce-short': 'bounce 1s ease-in-out 2'
                     }
                 }
             }
@@ -46,10 +48,10 @@
         <header class="mb-8 flex flex-col sm:flex-row items-start sm:items-end justify-between border-b border-slate-700 pb-6 gap-4">
             <div>
                 <h1 class="text-3xl font-bold text-white tracking-tight">WebP <span class="text-brand">Batch Resizer</span></h1>
-                <p class="text-slate-400 mt-1 text-sm">Redimensionar, Renomear e Converter para WebP.</p>
+                <p class="text-slate-400 mt-1 text-sm">Otimização completa: Dimensões, Peso e Formato.</p>
             </div>
             <div class="flex items-center gap-2">
-                <span class="px-3 py-1 text-xs font-mono rounded-full bg-slate-800 text-brand border border-slate-700">v2.4 Smart Zip</span>
+                <span class="px-3 py-1 text-xs font-mono rounded-full bg-slate-800 text-brand border border-slate-700">v2.6 Pixel Perfect</span>
             </div>
         </header>
 
@@ -61,45 +63,40 @@
                 
                 <!-- Drop Zone -->
                 <div id="dropZone" class="glass rounded-xl p-8 text-center border-2 border-dashed border-slate-600 hover:border-brand transition-all cursor-pointer group relative overflow-hidden">
-                    <input type="file" id="fileInput" multiple accept="image/*" class="absolute inset-0 opacity-0 cursor-pointer z-10">
+                    <input type="file" id="fileInput" multiple accept="image/*,.zip" class="absolute inset-0 opacity-0 cursor-pointer z-10">
                     <div class="space-y-3 pointer-events-none">
                         <div class="w-12 h-12 mx-auto bg-slate-800 rounded-full flex items-center justify-center group-hover:bg-brand/20 transition-colors">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-slate-400 group-hover:text-brand transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
                             </svg>
                         </div>
-                        <p class="text-sm font-medium text-slate-300">Adicionar Imagens</p>
+                        <div class="text-sm font-medium text-slate-300">
+                            <p>Arraste Imagens ou <span class="text-brand">ZIP</span></p>
+                        </div>
                     </div>
                 </div>
 
                 <!-- Settings -->
                 <div class="glass rounded-xl p-5 space-y-5">
-                    <!-- Renaming Section -->
                     <div class="space-y-3 pb-5 border-b border-slate-700">
                         <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider">Renomeação</h3>
                         <div>
-                            <label class="block text-xs text-slate-500 mb-1">Prefixo (Opcional)</label>
                             <div class="flex gap-2">
-                                <input type="text" id="prefixInput" placeholder="Ex: foto-site-" class="flex-1 bg-slate-800 border border-slate-700 rounded px-3 py-1.5 text-sm focus:border-brand focus:outline-none">
+                                <input type="text" id="prefixInput" placeholder="Ex: site-img-" class="flex-1 bg-slate-800 border border-slate-700 rounded px-3 py-1.5 text-sm focus:border-brand focus:outline-none">
                                 <button id="applyPrefixBtn" class="bg-slate-700 hover:bg-slate-600 px-3 py-1.5 rounded text-xs font-bold text-white transition-colors">Aplicar</button>
                             </div>
-                            <p class="text-[10px] text-slate-500 mt-1">Isso também define o nome do arquivo .ZIP</p>
                         </div>
                     </div>
 
-                    <!-- Scaling Section -->
                     <div class="space-y-4">
-                        <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider">Ajustes</h3>
-                        
+                        <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider">Ajustes de Saída</h3>
                         <div>
                             <div class="flex justify-between items-center mb-1">
                                 <label class="text-sm font-medium text-slate-300">Escala (%)</label>
                                 <span id="scaleValue" class="text-brand font-bold font-mono text-sm">100%</span>
                             </div>
                             <input type="range" id="scaleInput" min="1" max="100" value="100" class="w-full h-2 bg-slate-700 rounded-lg appearance-none cursor-pointer accent-brand">
-                            <p class="text-[10px] text-slate-500 mt-1">Dica: Se mudar aqui, clique em "Reprocessar".</p>
                         </div>
-                        
                         <div>
                             <div class="flex justify-between items-center mb-1">
                                 <label class="text-sm font-medium text-slate-300">Qualidade WebP</label>
@@ -110,21 +107,16 @@
                     </div>
                 </div>
 
-                <!-- Process Action -->
-                <button id="processBtn" disabled class="w-full py-4 px-4 bg-brand hover:bg-blue-600 disabled:bg-slate-800 disabled:text-slate-600 disabled:cursor-not-allowed text-white font-bold rounded-xl transition-all shadow-lg shadow-blue-500/20 flex justify-center items-center gap-2 group">
-                    <span id="btnText">1. Processar Imagens</span>
+                <button id="processBtn" disabled class="w-full py-4 px-4 bg-brand hover:bg-blue-600 disabled:bg-slate-800 disabled:text-slate-600 disabled:cursor-not-allowed text-white font-bold rounded-xl transition-all shadow-lg flex justify-center items-center gap-2 group">
+                    <span id="btnText">1. Processar Fila</span>
                     <svg id="loadingIcon" class="animate-spin h-5 w-5 text-white hidden" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                         <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                         <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                     </svg>
                 </button>
 
-                <!-- ZIP Download Action -->
-                <button id="downloadZipBtn" class="hidden w-full py-3 px-4 bg-success hover:bg-green-500 text-white font-bold rounded-xl transition-all shadow-lg shadow-green-500/20 flex justify-center items-center gap-2 animate-bounce-short">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
-                    </svg>
-                    2. Baixar Tudo (ZIP)
+                <button id="downloadZipBtn" class="hidden w-full py-3 px-4 bg-success hover:bg-green-500 text-white font-bold rounded-xl transition-all shadow-lg flex justify-center items-center gap-2">
+                    2. Baixar Tudo (.ZIP)
                 </button>
                 
                 <div id="statusArea" class="hidden p-3 rounded-lg bg-slate-800 border border-slate-700 text-xs font-mono text-center text-slate-300">
@@ -140,16 +132,14 @@
                             Fila de Arquivos 
                             <span id="fileCount" class="text-xs bg-slate-700 px-2 py-0.5 rounded text-slate-300">0</span>
                         </h2>
-                        <button id="clearBtn" class="text-xs text-red-400 hover:text-red-300 hidden flex items-center gap-1">
-                            Limpar Tudo
-                        </button>
+                        <button id="clearBtn" class="text-xs text-red-400 hover:text-red-300 hidden">Limpar Tudo</button>
                     </div>
 
                     <!-- Column Headers -->
                     <div class="grid grid-cols-12 gap-4 text-xs font-bold text-slate-500 uppercase tracking-wider mb-2 px-3">
                         <div class="col-span-2 text-center">Prévia</div>
-                        <div class="col-span-4">Nome Final</div>
-                        <div class="col-span-4 text-right">Detalhes (Antes -> Depois)</div>
+                        <div class="col-span-4">Arquivo</div>
+                        <div class="col-span-4 text-right">Info (Antes -> Depois)</div>
                         <div class="col-span-2 text-center">Ação</div>
                     </div>
                     
@@ -157,10 +147,7 @@
                     <div id="fileList" class="flex-1 overflow-y-auto space-y-2 pr-2 custom-scrollbar">
                         <!-- Empty State -->
                         <div id="emptyState" class="h-full flex flex-col items-center justify-center text-slate-600 opacity-50 mt-10">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                            </svg>
-                            <p>Arraste imagens aqui</p>
+                            <p>Importe imagens ou pastas ZIP</p>
                         </div>
                     </div>
                 </div>
@@ -168,9 +155,7 @@
         </div>
     </div>
 
-    <!-- Logic -->
     <script>
-        // --- Elements ---
         const fileInput = document.getElementById('fileInput');
         const dropZone = document.getElementById('dropZone');
         const fileList = document.getElementById('fileList');
@@ -189,38 +174,36 @@
         const prefixInput = document.getElementById('prefixInput');
         const applyPrefixBtn = document.getElementById('applyPrefixBtn');
 
-        // --- State ---
         let queue = [];
         let hasProcessed = false;
 
-        // --- Utils ---
         function formatBytes(bytes) {
-            if (bytes === 0) return '0 Bytes';
+            if (bytes === 0) return '0 B';
             const kb = bytes / 1024;
-            // Se maior que 1000KB, mostra em MB (conforme solicitado)
-            if (kb >= 1000) {
-                return (kb / 1024).toFixed(2) + ' MB';
-            }
+            if (kb >= 1000) return (kb / 1024).toFixed(2) + ' MB';
             return kb.toFixed(1) + ' KB';
         }
 
-        // --- Events ---
+        async function getImageDimensions(file) {
+            return new Promise((resolve) => {
+                const img = new Image();
+                img.onload = () => {
+                    resolve({ width: img.width, height: img.height });
+                    URL.revokeObjectURL(img.src);
+                };
+                img.src = URL.createObjectURL(file);
+            });
+        }
+
         scaleInput.addEventListener('input', (e) => {
             scaleValue.textContent = `${e.target.value}%`;
-            checkSettingsChanged();
+            if (hasProcessed) btnText.textContent = "♻️ Reprocessar Fila";
         });
         
         qualityInput.addEventListener('input', (e) => {
             qualityValue.textContent = `${e.target.value}%`;
-            checkSettingsChanged();
+            if (hasProcessed) btnText.textContent = "♻️ Reprocessar Fila";
         });
-
-        function checkSettingsChanged() {
-            if (hasProcessed) {
-                btnText.textContent = "♻️ Reprocessar (Atualizar Ajustes)";
-                processBtn.classList.add('ring-2', 'ring-warning', 'ring-offset-2', 'ring-offset-dark');
-            }
-        }
 
         dropZone.addEventListener('dragover', (e) => { e.preventDefault(); dropZone.classList.add('border-brand', 'bg-slate-800/50'); });
         dropZone.addEventListener('dragleave', (e) => { e.preventDefault(); dropZone.classList.remove('border-brand', 'bg-slate-800/50'); });
@@ -231,38 +214,60 @@
         });
         fileInput.addEventListener('change', (e) => handleFiles(e.target.files));
 
-        // --- Main Functions ---
+        async function handleFiles(files) {
+            statusArea.classList.remove('hidden');
+            statusArea.textContent = 'Lendo arquivos...';
+            
+            const fileArray = Array.from(files);
+            const itemsToAdd = [];
 
-        function handleFiles(files) {
-            const newFiles = Array.from(files).filter(f => f.type.startsWith('image/'));
-            if (newFiles.length === 0) return;
+            for (const file of fileArray) {
+                if (file.type === "application/zip" || file.name.endsWith('.zip')) {
+                    try {
+                        const zip = await JSZip.loadAsync(file);
+                        const entries = Object.keys(zip.files).filter(name => !zip.files[name].dir && /\.(jpe?g|png|webp|gif|bmp)$/i.test(name));
+                        for (const name of entries) {
+                            const blob = await zip.files[name].async("blob");
+                            const extractedFile = new File([blob], name.split('/').pop(), { type: blob.type });
+                            const dims = await getImageDimensions(extractedFile);
+                            itemsToAdd.push(createQueueItem(extractedFile, dims));
+                        }
+                    } catch (err) { console.error(err); }
+                } else if (file.type.startsWith('image/')) {
+                    const dims = await getImageDimensions(file);
+                    itemsToAdd.push(createQueueItem(file, dims));
+                }
+            }
 
-            const newItems = newFiles.map(file => ({
-                id: Date.now() + Math.random(),
+            if (itemsToAdd.length > 0) {
+                queue = [...queue, ...itemsToAdd];
+                renderList();
+                processBtn.disabled = false;
+                emptyState.classList.add('hidden');
+                clearBtn.classList.remove('hidden');
+                statusArea.textContent = 'Arquivos carregados.';
+            }
+        }
+
+        function createQueueItem(file, dimensions) {
+            return {
+                id: Math.random().toString(36).substr(2, 9),
                 originalFile: file,
                 previewUrl: URL.createObjectURL(file), 
                 customName: file.name.replace(/\.[^/.]+$/, ""), 
-                status: 'pending', // pending | done | error
+                origWidth: dimensions.width,
+                origHeight: dimensions.height,
+                status: 'pending',
                 blob: null,
-                processedSize: null, // Novo campo
-                processedScale: null // Novo campo
-            }));
-
-            queue = [...queue, ...newItems];
-            
-            if(hasProcessed) {
-                btnText.textContent = "♻️ Processar Novos Arquivos";
-            }
-            
-            renderList();
-            processBtn.disabled = false;
-            emptyState.classList.add('hidden');
-            clearBtn.classList.remove('hidden');
+                processedSize: null,
+                processedWidth: null,
+                processedHeight: null
+            };
         }
 
         function renderList() {
             fileList.innerHTML = '';
-            
+            fileCountSpan.textContent = queue.length;
             if (queue.length === 0) {
                 emptyState.classList.remove('hidden');
                 clearBtn.classList.add('hidden');
@@ -270,40 +275,44 @@
                 return;
             }
 
-            fileCountSpan.textContent = queue.length;
-
             queue.forEach((item, index) => {
                 const isDone = item.status === 'done';
-                const origSize = formatBytes(item.originalFile.size);
                 
-                // Lógica de exibição dos tamanhos e escala
-                let detailsHtml = `<span class="text-slate-500">${origSize}</span>`;
-                if (isDone && item.processedSize) {
-                    const finalSize = formatBytes(item.processedSize);
-                    detailsHtml = `
-                        <div class="flex flex-col items-end">
-                            <span class="text-slate-500 line-through text-[10px]">${origSize}</span>
-                            <div class="flex items-center gap-1">
-                                <span class="text-success font-bold text-sm">${finalSize}</span>
-                                <span class="text-[10px] text-slate-400 bg-slate-800 px-1 rounded border border-slate-700">Scan: ${item.processedScale}%</span>
+                // HTML de Informações (Peso e Dimensões)
+                let infoHtml = `
+                    <div class="flex flex-col items-end gap-0.5">
+                        <span class="text-slate-400 font-bold">${formatBytes(item.originalFile.size)}</span>
+                        <span class="text-[10px] text-slate-500 font-mono">${item.origWidth}×${item.origHeight}px</span>
+                    </div>
+                `;
+
+                if (isDone) {
+                    infoHtml = `
+                        <div class="flex flex-col items-end gap-0.5">
+                            <div class="flex items-center gap-2">
+                                <span class="text-[10px] text-slate-500 line-through">${formatBytes(item.originalFile.size)}</span>
+                                <span class="text-success font-bold text-sm">${formatBytes(item.processedSize)}</span>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <span class="text-[9px] text-slate-600 line-through">${item.origWidth}×${item.origHeight}px</span>
+                                <span class="text-brand font-mono text-[11px] font-bold">${item.processedWidth}×${item.processedHeight}px</span>
                             </div>
                         </div>
                     `;
                 }
 
                 const div = document.createElement('div');
-                div.className = `grid grid-cols-12 gap-4 items-center p-2 rounded-lg border transition-all animate-fade-in ${isDone ? 'border-success/30 bg-success/5' : 'border-slate-700 bg-slate-800/40'}`;
+                div.className = `grid grid-cols-12 gap-4 items-center p-2 rounded-lg border transition-all ${isDone ? 'border-success/30 bg-success/5' : 'border-slate-700 bg-slate-800/40'}`;
                 
                 div.innerHTML = `
                     <div class="col-span-2 flex justify-center items-center h-12 w-12 mx-auto bg-slate-900 rounded overflow-hidden border border-slate-700 relative">
-                        <img src="${item.previewUrl}" class="h-full w-full object-cover opacity-80" alt="Preview">
-                        ${!isDone && hasProcessed ? '<div class="absolute inset-0 bg-black/50 flex items-center justify-center text-[10px] text-warning font-bold">⚠️</div>' : ''}
+                        <img src="${item.previewUrl}" class="h-full w-full object-cover" alt="Preview">
                     </div>
                     
                     <div class="col-span-4 min-w-0">
                         <div class="flex items-center gap-1">
                             <input type="text" 
-                                class="w-full bg-transparent border-b border-transparent focus:border-brand focus:outline-none text-sm text-slate-200 placeholder-slate-600 hover:border-slate-600 transition-colors py-1 truncate"
+                                class="w-full bg-transparent border-b border-transparent focus:border-brand focus:outline-none text-sm text-slate-200 py-1 truncate"
                                 value="${item.customName}"
                                 onchange="updateName(${index}, this.value)"
                             >
@@ -311,19 +320,19 @@
                         </div>
                     </div>
                     
-                    <div class="col-span-4 text-right text-xs font-mono flex justify-end items-center">
-                        ${detailsHtml}
+                    <div class="col-span-4 text-right">
+                        ${infoHtml}
                     </div>
                     
                     <div class="col-span-2 flex justify-center items-center gap-2">
                         ${!isDone ? `
-                            <button onclick="removeItem(${index})" class="text-slate-600 hover:text-red-400 p-1.5 rounded transition-colors" title="Remover">
+                            <button onclick="removeItem(${index})" class="text-slate-600 hover:text-red-400 p-1.5 rounded">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
                                     <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
                                 </svg>
                             </button>
                         ` : `
-                            <button onclick="downloadIndividual(${index})" class="pop-in bg-success hover:bg-green-600 text-white p-2 rounded-lg shadow-lg flex items-center justify-center transition-transform hover:scale-105" title="Baixar este WebP">
+                            <button onclick="downloadIndividual(${index})" class="pop-in bg-success hover:bg-green-600 text-white p-2 rounded-lg shadow-lg">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
                                 </svg>
@@ -334,8 +343,6 @@
                 fileList.appendChild(div);
             });
         }
-
-        // --- Actions ---
 
         window.updateName = (index, value) => {
             queue[index].customName = value.trim() || `img-${index}`;
@@ -349,11 +356,7 @@
 
         window.downloadIndividual = (index) => {
             const item = queue[index];
-            if (item.blob) {
-                saveAs(item.blob, `${item.customName}.webp`);
-            } else {
-                alert("Erro: Arquivo não processado ainda.");
-            }
+            if (item.blob) saveAs(item.blob, `${item.customName}.webp`);
         };
 
         clearBtn.addEventListener('click', () => {
@@ -364,61 +367,48 @@
             downloadZipBtn.classList.add('hidden');
             statusArea.classList.add('hidden');
             processBtn.disabled = true;
-            btnText.textContent = "1. Processar Imagens";
-            processBtn.classList.remove('ring-2', 'ring-warning', 'ring-offset-2', 'ring-offset-dark');
+            btnText.textContent = "1. Processar Fila";
             renderList();
         });
 
         applyPrefixBtn.addEventListener('click', () => {
             const prefix = prefixInput.value.trim();
             if (!prefix) return;
-            queue.forEach((item, idx) => {
-                item.customName = `${prefix}${idx + 1}`;
-            });
+            queue.forEach((item, idx) => { item.customName = `${prefix}${idx + 1}`; });
             renderList();
         });
 
-        // --- CORE PROCESS LOGIC ---
-
         processBtn.addEventListener('click', async () => {
             if (queue.length === 0) return;
-
             processBtn.disabled = true;
-            btnText.textContent = 'Processando...';
+            btnText.textContent = 'Otimizando...';
             loadingIcon.classList.remove('hidden');
-            statusArea.classList.remove('hidden');
-            statusArea.textContent = 'Iniciando renderização...';
-            processBtn.classList.remove('ring-2', 'ring-warning', 'ring-offset-2', 'ring-offset-dark');
             
             const scale = parseInt(scaleInput.value) / 100;
             const quality = parseInt(qualityInput.value) / 100;
             
             try {
-                await Promise.all(queue.map(async (item, index) => {
-                    statusArea.textContent = `Otimizando img ${index+1}...`;
+                for (let i = 0; i < queue.length; i++) {
+                    const item = queue[i];
+                    statusArea.textContent = `Processando ${i + 1}/${queue.length}...`;
                     
-                    const webpBlob = await processImageToWebP(item.originalFile, scale, quality);
+                    const result = await processImageToWebP(item.originalFile, scale, quality);
                     
-                    item.blob = webpBlob;
-                    item.processedSize = webpBlob.size; // Salva tamanho final
-                    item.processedScale = Math.round(scale * 100); // Salva escala usada
+                    item.blob = result.blob;
+                    item.processedSize = result.blob.size;
+                    item.processedWidth = result.width;
+                    item.processedHeight = result.height;
                     item.status = 'done';
-                }));
-
+                    if (i % 2 === 0) renderList(); 
+                }
                 hasProcessed = true;
-                statusArea.textContent = 'Sucesso! Baixe individualmente ou em ZIP.';
-                statusArea.className = "p-3 rounded-lg bg-success/20 border border-success/50 text-xs font-mono text-center text-success";
-                
+                statusArea.textContent = 'Pronto!';
                 renderList(); 
-                
-                processBtn.classList.remove('hidden');
-                btnText.textContent = "♻️ Reprocessar (Se mudar ajustes)";
+                btnText.textContent = "♻️ Reprocessar Tudo";
                 downloadZipBtn.classList.remove('hidden');
-
             } catch (error) {
                 console.error(error);
-                statusArea.textContent = 'Erro ao processar. Tente recarregar.';
-                statusArea.className = "p-3 rounded-lg bg-red-900/30 border border-red-700 text-xs text-center text-red-400";
+                statusArea.textContent = 'Erro ao processar.';
             } finally {
                 processBtn.disabled = false;
                 loadingIcon.classList.add('hidden');
@@ -427,68 +417,32 @@
 
         downloadZipBtn.addEventListener('click', async () => {
             const zip = new JSZip();
-            let count = 0;
-            
-            // Pega o prefixo atual para nomear o ZIP
             const prefix = prefixInput.value.trim();
-            // Se tiver prefixo, o zip vira "prefixo.zip", se não, vira "imagens_webp.zip"
-            const zipFilename = prefix ? `${prefix}.zip` : "imagens_otimizadas.zip";
-
-            queue.forEach(item => {
-                if (item.blob) {
-                    // Arquivos internos respeitam o customName (que já inclui o prefixo se foi aplicado)
-                    zip.file(`${item.customName}.webp`, item.blob);
-                    count++;
-                }
-            });
-
-            if(count === 0) {
-                alert("Nenhuma imagem processada para baixar.");
-                return;
-            }
-
-            const originalText = downloadZipBtn.innerHTML;
-            downloadZipBtn.innerHTML = `Compactando...`;
-            
+            const zipFilename = prefix ? `${prefix}.zip` : "fotos_otimizadas.zip";
+            queue.forEach(item => { if (item.blob) zip.file(`${item.customName}.webp`, item.blob); });
             const content = await zip.generateAsync({type:"blob"});
             saveAs(content, zipFilename);
-            downloadZipBtn.innerHTML = originalText;
         });
-
-        // --- CANVAS ENGINE ---
 
         function processImageToWebP(file, scale, quality) {
             return new Promise((resolve, reject) => {
                 const tempUrl = URL.createObjectURL(file);
                 const img = new Image();
-                
                 img.onload = () => {
                     const canvas = document.createElement('canvas');
                     const ctx = canvas.getContext('2d');
-                    
                     const width = Math.floor(img.width * scale);
                     const height = Math.floor(img.height * scale);
-                    
                     canvas.width = width;
                     canvas.height = height;
-                    
                     ctx.imageSmoothingEnabled = true;
                     ctx.imageSmoothingQuality = 'high';
                     ctx.drawImage(img, 0, 0, width, height);
-                    
                     canvas.toBlob((blob) => {
                         URL.revokeObjectURL(tempUrl);
-                        if (blob) {
-                            resolve(blob);
-                        } else {
-                            reject(new Error('Falha ao gerar blob WebP'));
-                        }
+                        if (blob) resolve({ blob, width, height });
+                        else reject(new Error('Fail'));
                     }, 'image/webp', quality);
-                };
-                
-                img.onerror = () => {
-                    URL.revokeObjectURL(tempUrl);
-                    reject(new Error('Erro ao carregar imagem'));
                 };
                 img.src = tempUrl;
             });
@@ -496,4 +450,3 @@
     </script>
 </body>
 </html>
-
